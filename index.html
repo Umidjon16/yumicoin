@@ -1,1 +1,400 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Yumi Coin</title>
+<script src="https://telegram.org/js/telegram-web-app.js"></script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
+:root{
+  --gold:#F5A623;--gold2:#C47D0E;--gold3:#FFC84A;
+  --bg:#0F0B00;--card:#1C1600;--border:#332500;
+  --bright:#FFE066;--muted:#7A6A30;--green:#27AE60;--blue:#5BC8F5;
+}
+html,body{height:100%;overflow:hidden;}
+body{background:var(--bg);color:var(--bright);font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;display:flex;flex-direction:column;height:100vh;}
 
+/* HEADER */
+.hdr{background:var(--card);border-bottom:1px solid var(--border);padding:10px 14px;display:flex;align-items:center;gap:10px;flex-shrink:0;}
+.ava{width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,var(--gold),var(--gold2));display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:700;color:#0F0B00;flex-shrink:0;}
+.hdr-info{flex:1;}
+.hdr-app{font-size:9px;color:var(--muted);letter-spacing:1.5px;text-transform:uppercase;}
+.hdr-user{font-size:13px;font-weight:600;color:var(--bright);}
+.hdrbdg{display:flex;gap:6px;}
+.bdg{background:#211800;border:1px solid var(--border);border-radius:20px;padding:4px 9px;font-size:12px;font-weight:700;display:flex;align-items:center;gap:3px;}
+.bdg.d{color:var(--blue);}
+.bdg.c{color:var(--gold);}
+
+/* CONTENT */
+.content{flex:1;overflow-y:auto;overflow-x:hidden;padding:14px;display:flex;flex-direction:column;gap:12px;padding-bottom:70px;}
+.screen{display:none;flex-direction:column;gap:12px;animation:fadeIn 0.2s ease;}
+.screen.active{display:flex;}
+@keyframes fadeIn{from{opacity:0;transform:translateY(6px);}to{opacity:1;transform:translateY(0);}}
+
+/* NAVBAR */
+.navbar{position:fixed;bottom:0;left:0;right:0;background:var(--card);border-top:1px solid var(--border);display:grid;grid-template-columns:repeat(5,1fr);padding:6px 0 8px;z-index:100;}
+.ni{display:flex;flex-direction:column;align-items:center;gap:2px;cursor:pointer;padding:3px 0;position:relative;}
+.ni-ico{font-size:20px;color:var(--muted);}
+.ni-lbl{font-size:8px;color:var(--muted);letter-spacing:0.5px;text-transform:uppercase;font-weight:600;}
+.ni.active .ni-ico,.ni.active .ni-lbl{color:var(--gold);}
+.ni-dot{width:6px;height:6px;background:var(--gold);border-radius:50%;position:absolute;top:2px;right:calc(50% - 14px);}
+
+/* CARDS */
+.card{background:var(--card);border:1px solid var(--border);border-radius:14px;overflow:hidden;}
+.row{display:flex;align-items:center;gap:12px;padding:13px 14px;border-bottom:1px solid var(--border);cursor:pointer;}
+.row:last-child{border-bottom:none;}
+.row:active{background:#211800;}
+.row-ico{width:34px;height:34px;border-radius:9px;background:#211800;border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0;}
+.row-lbl{flex:1;font-size:13px;color:var(--bright);}
+.row-arr{color:var(--muted);font-size:16px;}
+
+/* TAP SCREEN */
+.coin-top{text-align:center;padding:4px 0;}
+.coin-num{font-size:38px;font-weight:700;color:var(--gold);letter-spacing:-1px;}
+.tap-lbl{background:#211800;border:1px solid var(--border);border-radius:20px;padding:5px 14px;font-size:12px;color:var(--gold);width:fit-content;margin:0 auto;}
+.tap-wrap{display:flex;justify-content:center;padding:6px 0;}
+.tap-btn{width:165px;height:165px;border-radius:50%;background:radial-gradient(circle at 38% 32%,#FFD700 0%,#E8950A 50%,#B87000 100%);border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;box-shadow:0 0 0 4px #332500, 0 0 30px rgba(245,166,35,0.25);transition:transform 0.07s,box-shadow 0.07s;user-select:none;}
+.tap-btn:active{transform:scale(0.90);box-shadow:0 0 0 4px #332500, 0 0 10px rgba(245,166,35,0.1);}
+.y-ltr{font-size:76px;font-weight:900;color:#7A4800;text-shadow:0 3px 0 #5A3400,0 5px 12px rgba(0,0,0,0.5);line-height:1;}
+.gbtn-row{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+.gbtn{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:12px;color:var(--gold);font-size:13px;font-weight:600;cursor:pointer;text-align:center;}
+.gbtn:active{background:#211800;}
+.nrg{background:var(--card);border:1px solid var(--border);border-radius:13px;padding:12px 14px;}
+.nrg-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:7px;}
+.nrg-lbl{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;}
+.nrg-val{font-size:12px;color:var(--bright);font-weight:700;}
+.nrg-bg{background:#211800;border-radius:4px;height:7px;overflow:hidden;}
+.nrg-fill{height:100%;border-radius:4px;background:linear-gradient(90deg,#C47D0E,#FFD700);transition:width 0.4s;}
+
+/* PROFIL */
+.bal-card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:14px;}
+.bal-lbl{font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:1.5px;margin-bottom:3px;}
+.bal-amt{font-size:28px;font-weight:700;color:var(--green);}
+.bal-row{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-top:12px;}
+.bal-btn{border-radius:10px;padding:11px;font-size:13px;font-weight:700;cursor:pointer;border:none;display:flex;align-items:center;justify-content:center;gap:5px;}
+.dep{background:var(--green);color:#0A1F0F;}
+.wit{background:var(--gold);color:#0F0B00;}
+.stat-row{display:grid;grid-template-columns:1fr 1fr;gap:9px;}
+.stat{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:11px 13px;}
+.stat-lbl{font-size:10px;color:var(--muted);margin-bottom:3px;}
+.stat-val{font-size:20px;font-weight:700;}
+.sv-g{color:var(--gold);}
+.sv-b{color:var(--blue);}
+
+/* TABS */
+.tabs{display:grid;grid-template-columns:1fr 1fr;background:var(--card);border:1px solid var(--border);border-radius:11px;overflow:hidden;}
+.tab{padding:10px;text-align:center;font-size:12px;font-weight:700;color:var(--muted);cursor:pointer;letter-spacing:0.5px;}
+.tab.active{background:var(--gold);color:#0F0B00;}
+
+/* VAZIFALAR */
+.task{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:11px 13px;display:flex;align-items:center;gap:11px;}
+.task-ico{width:40px;height:40px;border-radius:10px;background:#211800;display:flex;align-items:center;justify-content:center;font-size:19px;flex-shrink:0;}
+.task-info{flex:1;}
+.task-ttl{font-size:13px;font-weight:600;color:var(--bright);}
+.task-rwd{font-size:11px;color:var(--blue);margin-top:2px;}
+.task-btn{background:var(--gold);color:#0F0B00;border:none;border-radius:8px;padding:7px 11px;font-size:11px;font-weight:700;cursor:pointer;}
+.task-btn.done{background:var(--border);color:var(--muted);}
+.create-card{background:var(--card);border:1px solid var(--border);border-radius:13px;padding:14px;display:flex;flex-direction:column;gap:11px;}
+.inp-lbl{font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:1.5px;margin-bottom:5px;}
+input[type=text],input[type=number]{width:100%;background:#211800;border:1px solid var(--border);border-radius:8px;padding:9px 11px;color:var(--bright);font-size:13px;outline:none;}
+input:focus{border-color:var(--gold);}
+.price-box{background:#211800;border:1px solid var(--border);border-radius:8px;padding:11px;}
+.price-amt{font-size:18px;font-weight:700;color:var(--gold);}
+.price-sub{font-size:11px;color:var(--muted);margin-top:2px;}
+.submit-btn{background:var(--gold);color:#0F0B00;border:none;border-radius:10px;padding:13px;font-size:14px;font-weight:700;cursor:pointer;width:100%;}
+.submit-btn:active{opacity:0.85;}
+
+/* BOOST */
+.bitem{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:12px 13px;display:flex;align-items:center;gap:11px;cursor:pointer;}
+.bitem:active{background:#211800;}
+.blogo{width:40px;height:40px;border-radius:11px;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0;}
+.binfo{flex:1;}
+.bnm{font-size:13px;font-weight:600;color:var(--bright);}
+.bsub{font-size:11px;color:var(--muted);margin-top:1px;}
+.barr{width:26px;height:26px;border-radius:50%;border:1px solid var(--border);display:flex;align-items:center;justify-content:center;color:var(--muted);font-size:14px;}
+
+/* AUKSION */
+.aitem{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:13px;display:flex;gap:11px;}
+.aimg{width:68px;height:68px;border-radius:10px;background:#211800;display:flex;align-items:center;justify-content:center;font-size:30px;flex-shrink:0;}
+.ainfo{flex:1;}
+.attl{font-size:13px;font-weight:600;color:var(--bright);margin-bottom:3px;}
+.aprc{font-size:12px;color:var(--gold);}
+.atim{font-size:11px;color:var(--green);margin-top:3px;font-weight:600;}
+.aarr{width:32px;height:32px;border-radius:50%;background:var(--gold);display:flex;align-items:center;justify-content:center;color:#0F0B00;font-size:17px;align-self:center;flex-shrink:0;cursor:pointer;}
+
+/* REYTING */
+.ritem{background:var(--card);border:1px solid var(--border);border-radius:11px;padding:11px 14px;display:flex;align-items:center;gap:11px;}
+.rmdl{font-size:20px;width:30px;text-align:center;flex-shrink:0;}
+.rnm{flex:1;font-size:13px;color:var(--bright);font-weight:600;}
+.rcn{font-size:12px;color:var(--gold);font-weight:700;}
+
+/* FLOAT */
+.fp{position:fixed;font-size:21px;font-weight:700;color:var(--gold3);pointer-events:none;animation:fup 0.85s ease-out forwards;z-index:999;}
+@keyframes fup{0%{opacity:1;transform:translateY(0) scale(1);}100%{opacity:0;transform:translateY(-65px) scale(1.3);}}
+
+/* TOAST */
+.toast{position:fixed;top:62px;left:50%;transform:translateX(-50%);background:var(--gold);color:#0F0B00;border-radius:20px;padding:8px 20px;font-size:13px;font-weight:700;opacity:0;pointer-events:none;transition:opacity 0.18s;z-index:999;white-space:nowrap;box-shadow:0 4px 16px rgba(0,0,0,0.3);}
+.toast.show{opacity:1;}
+
+.sec-ttl{font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:1.5px;}
+</style>
+</head>
+<body>
+
+<div class="hdr">
+  <div class="ava" id="hdr-ava">Y</div>
+  <div class="hdr-info">
+    <div class="hdr-app">Yumi Coin</div>
+    <div class="hdr-user" id="hdr-nm">@user</div>
+  </div>
+  <div class="hdrbdg">
+    <div class="bdg d">💎<span id="h-d">0</span></div>
+    <div class="bdg c">🪙<span id="h-c">0</span></div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<div class="content">
+
+  <!-- BOSISH -->
+  <div class="screen active" id="s-tap">
+    <div class="coin-top">
+      <div class="coin-num">🪙 <span id="cn">0</span></div>
+    </div>
+    <div class="tap-lbl">📈 Tap x1</div>
+    <div class="tap-wrap">
+      <div class="tap-btn" id="tapbtn">
+        <span class="y-ltr">Y</span>
+      </div>
+    </div>
+    <div class="gbtn-row">
+      <div class="gbtn" onclick="toast('🎮 Game tez orada!')">🎮 GAME</div>
+      <div class="gbtn" onclick="toast('🏪 Shop tez orada!')">🏪 SHOP</div>
+    </div>
+    <div class="nrg">
+      <div class="nrg-top">
+        <span class="nrg-lbl">⚡ Energy</span>
+        <span class="nrg-val"><span id="ev">500</span> / 500</span>
+      </div>
+      <div class="nrg-bg"><div class="nrg-fill" id="eb" style="width:100%"></div></div>
+    </div>
+  </div>
+
+  <!-- VAZIFALAR -->
+  <div class="screen" id="s-tasks">
+    <div class="tabs">
+      <div class="tab active" id="t-mavjud" onclick="stab('mavjud')">MAVJUD</div>
+      <div class="tab" id="t-yaratish" onclick="stab('yaratish')">YARATISH</div>
+    </div>
+    <div id="d-mavjud">
+      <div class="sec-ttl" style="margin-bottom:8px;">Obuna bo'l va mukofot ol 🎁</div>
+      <div style="display:flex;flex-direction:column;gap:9px;">
+        <div class="task"><div class="task-ico">📺</div><div class="task-info"><div class="task-ttl">Reklama Ko'rish (2)</div><div class="task-rwd">+1 💎</div></div><button class="task-btn" onclick="ctask(this,1)">KO'RISH</button></div>
+        <div class="task"><div class="task-ico">👥</div><div class="task-info"><div class="task-ttl">Do'stlar taklif qilish</div><div class="task-rwd">+50 💎</div></div><button class="task-btn" onclick="ctask(this,50)">O'TISH</button></div>
+        <div class="task"><div class="task-ico">✈️</div><div class="task-info"><div class="task-ttl">@yumi_coin_01</div><div class="task-rwd">+3 💎</div></div><button class="task-btn" onclick="ctask(this,3)">O'TISH</button></div>
+      </div>
+    </div>
+    <div id="d-yaratish" style="display:none;">
+      <div class="create-card">
+        <div><div class="inp-lbl">Telegram Kanal Username</div><input type="text" placeholder="@username" id="ch-inp"></div>
+        <div><div class="inp-lbl">Ajratiladigan olmos</div><input type="number" value="50" id="dm-inp"></div>
+        <div class="price-box"><div class="inp-lbl">Narxi</div><div class="price-amt" id="price-show">50 ta</div><div class="price-sub">50 diamond</div></div>
+        <button class="submit-btn" onclick="createTask()">Vazifani joylash</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- BOOST -->
+  <div class="screen" id="s-boost">
+    <div class="bitem"><div class="blogo" style="background:#ff004420;">📸</div><div class="binfo"><div class="bnm">Instagram Prasmotr</div><div class="bsub">Sifatli ko'rilishlar</div></div><div class="barr">›</div></div>
+    <div class="bitem"><div class="blogo" style="background:#ff004420;">📤</div><div class="binfo"><div class="bnm">Instagram Jo'natishlar</div><div class="bsub">Haqiqiy ulashishlar</div></div><div class="barr">›</div></div>
+    <div class="bitem"><div class="blogo" style="background:#ff004420;">👥</div><div class="binfo"><div class="bnm">Instagram Obunachi</div><div class="bsub">Tez va sifatli obunachilar</div></div><div class="barr">›</div></div>
+    <div class="bitem"><div class="blogo" style="background:#ff004420;">❤️</div><div class="binfo"><div class="bnm">Instagram Like</div><div class="bsub">Tez va sifatli like</div></div><div class="barr">›</div></div>
+    <div class="bitem"><div class="blogo" style="background:#0088cc20;">✈️</div><div class="binfo"><div class="bnm">Telegram Prasmotr</div><div class="bsub">Tezkor ko'rilishlar</div></div><div class="barr">›</div></div>
+    <div class="bitem"><div class="blogo" style="background:#0088cc20;">😍</div><div class="binfo"><div class="bnm">Telegram Reaksiya</div><div class="bsub">Jonli reaksiyalar</div></div><div class="barr">›</div></div>
+    <div class="bitem"><div class="blogo" style="background:#0088cc20;">📢</div><div class="binfo"><div class="bnm">TG Obunachilar</div><div class="bsub">Telegram members</div></div><div class="barr">›</div></div>
+  </div>
+
+  <!-- AUKSION -->
+  <div class="screen" id="s-auction">
+    <div class="tabs">
+      <div class="tab active" id="a-faol" onclick="satab('faol')">FAOL</div>
+      <div class="tab" id="a-tug" onclick="satab('tugagan')">TUGAGAN</div>
+    </div>
+    <div id="d-faol" style="display:flex;flex-direction:column;gap:9px;">
+      <div class="aitem"><div class="aimg">👤</div><div class="ainfo"><div class="attl">Instagram – 1k Followers</div><div class="aprc">10 099 🪙 · 61 taklif</div><div class="atim">08:49:30 ♻️ AUTO</div></div><div class="aarr">›</div></div>
+      <div class="aitem"><div class="aimg">🪖</div><div class="ainfo"><div class="attl">PUBG – 60 UC</div><div class="aprc">12 200 🪙 · 44 taklif</div><div class="atim">08:54:05 ♻️ AUTO</div></div><div class="aarr">›</div></div>
+      <div class="aitem"><div class="aimg">⭐</div><div class="ainfo"><div class="attl">Telegram Premium 😍</div><div class="aprc">11 400 🪙 · 26 taklif</div><div class="atim">08:56:20 ♻️ AUTO</div></div><div class="aarr">›</div></div>
+      <div class="aitem"><div class="aimg">🌟</div><div class="ainfo"><div class="attl">Telegram Stars – 50 ⭐</div><div class="aprc">5 100 🪙 · 20 taklif</div><div class="atim">09:10:00 ♻️ AUTO</div></div><div class="aarr">›</div></div>
+    </div>
+    <div id="d-tug" style="display:none;flex-direction:column;gap:9px;">
+      <div class="aitem" style="opacity:0.6;"><div class="aimg" style="font-size:20px;">👥</div><div class="ainfo"><div class="attl">Telegram – 1k Followers</div><div class="aprc">23 047 🪙 · 27 taklif</div><div class="atim" style="color:#666;">Yakunlangan ♻️</div></div><div class="aarr" style="background:#211800;color:var(--muted);">›</div></div>
+      <div class="aitem" style="opacity:0.6;"><div class="aimg">💝</div><div class="ainfo"><div class="attl">Telegram gift 💝💝💝</div><div class="aprc">25 642 🪙 · 53 taklif</div><div class="atim" style="color:#666;">Yakunlangan ♻️</div></div><div class="aarr" style="background:#211800;color:var(--muted);">›</div></div>
+      <div class="aitem" style="opacity:0.6;"><div class="aimg">🌹</div><div class="ainfo"><div class="attl">Telegram gift 🌹🌹🌹</div><div class="aprc">50 369 🪙 · 9 taklif</div><div class="atim" style="color:#666;">Yakunlangan ♻️</div></div><div class="aarr" style="background:#211800;color:var(--muted);">›</div></div>
+    </div>
+  </div>
+
+  <!-- PROFIL -->
+  <div class="screen" id="s-profile">
+    <div class="bal-card">
+      <div class="bal-lbl">UZS</div>
+      <div class="bal-amt">0 UZS</div>
+      <div class="bal-row">
+        <button class="bal-btn dep" onclick="toast('💳 Tez orada!')">💳 Pul kiritish</button>
+        <button class="bal-btn wit" onclick="toast('💸 Tez orada!')">💸 Pul chiqarish</button>
+      </div>
+    </div>
+    <div class="stat-row">
+      <div class="stat"><div class="stat-lbl">Coinlar</div><div class="stat-val sv-g">🪙 <span id="p-c">0</span></div></div>
+      <div class="stat"><div class="stat-lbl">Olmaslar</div><div class="stat-val sv-b">💎 <span id="p-d">0</span></div></div>
+    </div>
+    <div class="card">
+      <div class="row" onclick="toast('🔄 Tez orada!')"><div class="row-ico">🔄</div><div class="row-lbl">P2P bozori</div><div class="row-arr">›</div></div>
+      <div class="row" onclick="daily()"><div class="row-ico">🎁</div><div class="row-lbl">Kunlik Bonus (+100 🪙)</div><div class="row-arr">›</div></div>
+      <div class="row" onclick="toast('📦 Tez orada!')"><div class="row-ico">📦</div><div class="row-lbl">Buyurtmalarim</div><div class="row-arr">›</div></div>
+      <div class="row" onclick="toast('💎 Tez orada!')"><div class="row-ico">💎</div><div class="row-lbl">Olmos Yuborish</div><div class="row-arr">›</div></div>
+      <div class="row" onclick="sw('rating')"><div class="row-ico">🏆</div><div class="row-lbl">Reyting</div><div class="row-arr">›</div></div>
+      <div class="row" onclick="toast('⭐ Tez orada!')"><div class="row-ico">⭐</div><div class="row-lbl">Maxsus Xizmatlar</div><div class="row-arr">›</div></div>
+      <div class="row" onclick="toast('🌐 Til: O\'zbek ✅')"><div class="row-ico">🌐</div><div class="row-lbl">Til</div><div class="row-arr">›</div></div>
+    </div>
+  </div>
+
+  <!-- REYTING -->
+  <div class="screen" id="s-rating">
+    <div style="display:flex;align-items:center;gap:10px;">
+      <div onclick="sw('profile')" style="cursor:pointer;color:var(--gold);font-size:24px;line-height:1;">‹</div>
+      <div style="font-size:15px;font-weight:700;color:var(--bright);">🏆 TOP 10 Reyting</div>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:8px;" id="rlist"></div>
+  </div>
+
+</div>
+
+<div class="navbar">
+  <div class="ni" id="n-boost" onclick="sw('boost')"><div class="ni-ico">🚀</div><div class="ni-lbl">Boost</div></div>
+  <div class="ni" id="n-tasks" onclick="sw('tasks')"><div class="ni-dot"></div><div class="ni-ico">✅</div><div class="ni-lbl">Vazifalar</div></div>
+  <div class="ni active" id="n-tap" onclick="sw('tap')"><div class="ni-ico">🎯</div><div class="ni-lbl">Bosish</div></div>
+  <div class="ni" id="n-auction" onclick="sw('auction')"><div class="ni-ico">🔨</div><div class="ni-lbl">Auksion</div></div>
+  <div class="ni" id="n-profile" onclick="sw('profile')"><div class="ni-ico">👤</div><div class="ni-lbl">Profil</div></div>
+</div>
+
+<script>
+const tg=window.Telegram&&window.Telegram.WebApp;
+if(tg){tg.expand();tg.setHeaderColor&&tg.setHeaderColor('#0F0B00');tg.setBackgroundColor&&tg.setBackgroundColor('#0F0B00');}
+
+let coins=0,diamonds=0,energy=500;
+const ME=500;
+
+function load(){
+  try{const d=JSON.parse(localStorage.getItem('yc')||'{}');coins=d.c||0;diamonds=d.d||0;energy=d.e!=null?d.e:500;}catch(e){}
+  if(tg&&tg.initDataUnsafe&&tg.initDataUnsafe.user){
+    const u=tg.initDataUnsafe.user;
+    document.getElementById('hdr-nm').textContent='@'+(u.username||u.first_name||'user');
+    document.getElementById('hdr-ava').textContent=(u.first_name||'Y')[0].toUpperCase();
+  }
+  upd();buildRating();
+}
+
+function save(){try{localStorage.setItem('yc',JSON.stringify({c:coins,d:diamonds,e:energy}));}catch(e){}}
+
+function upd(){
+  ['h-c','cn','p-c'].forEach(id=>{const el=document.getElementById(id);if(el)el.textContent=coins.toLocaleString();});
+  ['h-d','p-d'].forEach(id=>{const el=document.getElementById(id);if(el)el.textContent=diamonds;});
+  document.getElementById('ev').textContent=energy;
+  document.getElementById('eb').style.width=Math.round(energy/ME*100)+'%';
+}
+
+document.getElementById('tapbtn').addEventListener('click',function(e){
+  if(energy<=0){toast('⚡ Energy tugadi!');return;}
+  coins++;energy--;upd();save();
+  const fp=document.createElement('div');
+  fp.className='fp';fp.textContent='+1 🪙';
+  fp.style.cssText=`left:${e.clientX-16}px;top:${e.clientY-24}px`;
+  document.body.appendChild(fp);
+  setTimeout(()=>fp.remove(),880);
+  if(tg&&tg.HapticFeedback)tg.HapticFeedback.impactOccurred('light');
+});
+
+function sw(name){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  const sc=document.getElementById('s-'+name);
+  if(sc)sc.classList.add('active');
+  ['boost','tasks','tap','auction','profile'].forEach(id=>{
+    const n=document.getElementById('n-'+id);
+    if(n)n.classList.toggle('active',id===name);
+  });
+}
+
+function stab(t){
+  document.getElementById('t-mavjud').classList.toggle('active',t==='mavjud');
+  document.getElementById('t-yaratish').classList.toggle('active',t==='yaratish');
+  document.getElementById('d-mavjud').style.display=t==='mavjud'?'block':'none';
+  document.getElementById('d-yaratish').style.display=t==='yaratish'?'block':'none';
+}
+
+function satab(t){
+  document.getElementById('a-faol').classList.toggle('active',t==='faol');
+  document.getElementById('a-tug').classList.toggle('active',t==='tugagan');
+  document.getElementById('d-faol').style.display=t==='faol'?'flex':'none';
+  document.getElementById('d-tug').style.display=t==='tugagan'?'flex':'none';
+}
+
+function ctask(btn,r){
+  if(btn.classList.contains('done')){toast('Allaqachon bajarildi!');return;}
+  diamonds+=r;upd();save();
+  btn.textContent='✅';btn.classList.add('done');
+  toast('+'+r+' 💎 oldingiz!');
+  if(tg&&tg.HapticFeedback)tg.HapticFeedback.notificationOccurred('success');
+}
+
+let dc=false;
+function daily(){
+  if(dc){toast('⏰ Ertaga qayta oling!');return;}
+  coins+=100;dc=true;upd();save();
+  toast('🎁 +100 🪙 Kunlik bonus!');
+  if(tg&&tg.HapticFeedback)tg.HapticFeedback.notificationOccurred('success');
+}
+
+function createTask(){
+  const ch=document.getElementById('ch-inp').value.trim();
+  const dm=parseInt(document.getElementById('dm-inp').value)||50;
+  if(!ch){toast('❌ Kanal username kiriting!');return;}
+  if(dm<10){toast('❌ Minimum 10 olmas!');return;}
+  if(diamonds<dm){toast('❌ Yetarli olmas yo\'q!');return;}
+  diamonds-=dm;upd();save();
+  toast('✅ Vazifa joylashtirildi!');
+  stab('mavjud');
+}
+
+document.getElementById('dm-inp').addEventListener('input',function(){
+  const v=parseInt(this.value)||0;
+  document.getElementById('price-show').textContent=v+' ta';
+});
+
+function buildRating(){
+  const nms=['@Abdullayev','@Norqulov','@Toshmatov','@Karimova','@Rahimov','@Xasanov','@Yusupova','@Mirzayev','@Ismoilov','@Qodirov'];
+  const cs=[98450,75230,61000,54800,43200,38900,31500,28700,22100,19800];
+  const md=['🥇','🥈','🥉'];
+  document.getElementById('rlist').innerHTML=nms.map((n,i)=>`
+    <div class="ritem">
+      <div class="rmdl">${md[i]||(i+1+'.')}</div>
+      <div class="rnm">${n}</div>
+      <div class="rcn">${cs[i].toLocaleString()} 🪙</div>
+    </div>`).join('');
+}
+
+let tt;
+function toast(msg){
+  const el=document.getElementById('toast');
+  el.textContent=msg;el.classList.add('show');
+  clearTimeout(tt);tt=setTimeout(()=>el.classList.remove('show'),2200);
+}
+
+setInterval(()=>{if(energy<ME){energy=Math.min(energy+1,ME);upd();save();}},6000);
+load();
+</script>
+</body>
+</html>
+s
